@@ -1,6 +1,8 @@
-void main() throws IOException {
+import java.sql.SQLException;
+
+void main() throws IOException, SQLException {
 
     Repository r = new Repository();
-    r.repo();
-
+    Webbshop ws = new Webbshop(r);
+    ws.start();
 }

@@ -5,29 +5,37 @@ import java.util.Properties;
 
 public class Repository {
 
-    public void repo() throws IOException {
+    private Connection c;
 
+    public Repository() throws IOException, SQLException {
 
         Properties p = new Properties();
         p.load(new FileInputStream("src/settings.properties"));
 
-        try (Connection c = DriverManager.getConnection(
+        c = DriverManager.getConnection(
                 p.getProperty("connStr"),
                 p.getProperty("name"),
                 p.getProperty("password"));
 
-             Statement statement = c.createStatement();
-             ResultSet rs = statement.executeQuery("select * from customer")
+    }
 
-        ) {
+    public boolean login(String username, String password) throws SQLException {
+        String sql =
+                "select * from customer where name = ? and password = ?";
 
-            while (rs.next()) {
-                System.out.println(rs.getInt("id") + " " + rs.getString("name"));
-            }
+        try (PreparedStatement pStatement = c.prepareStatement(sql)){
+            pStatement.setString(1, username);
+            pStatement.setString(2, password);
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            ResultSet rs = pStatement.executeQuery();
+            return rs.next();
         }
 
     }
+
+    public ResultSet getAllShoes() throws SQLException {
+        Statement s = c.createStatement();
+        return s.executeQuery("select * from shoe where quantity > 0");
+    }
+
 }
