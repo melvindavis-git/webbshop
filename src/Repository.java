@@ -19,16 +19,18 @@ public class Repository {
 
     }
 
-    public boolean login(String username, String password) throws SQLException {
-        String sql =
-                "select * from customer where name = ? and password = ?";
+    public Integer login(String username, String password) throws SQLException {
+        String sql = "select * from customer where name = ? and password = ?";
 
-        try (PreparedStatement pStatement = c.prepareStatement(sql)){
+        try (PreparedStatement pStatement = c.prepareStatement(sql)) {
             pStatement.setString(1, username);
             pStatement.setString(2, password);
 
             ResultSet rs = pStatement.executeQuery();
-            return rs.next();
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+            return null;
         }
 
     }
@@ -36,6 +38,16 @@ public class Repository {
     public ResultSet getAllShoes() throws SQLException {
         Statement s = c.createStatement();
         return s.executeQuery("select * from shoe where quantity > 0");
+    }
+
+    public void addToCart(int c_id, int s_id) throws SQLException {
+        String sql = "call AddToCart(?, ?)";
+
+        try (CallableStatement cs = c.prepareCall(sql)) {
+            cs.setInt(1, c_id);
+            cs.setInt(2, s_id);
+            cs.executeQuery();
+        }
     }
 
 }
