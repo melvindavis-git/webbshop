@@ -34,7 +34,7 @@ public class Webbshop {
         listShoesAndAddToCart();
     }
 
-    private void listShoesAndAddToCart() throws SQLException {
+    public void printAllShoes() throws SQLException {
         ResultSet rs = repo.getAllShoes();
         while (rs.next()) {
             System.out.println(
@@ -44,24 +44,50 @@ public class Webbshop {
                             rs.getString("quantity") + ")"
             );
         }
+    }
 
-
+    private void listShoesAndAddToCart() throws SQLException {
         while (true) {
+            printAllShoes();
             System.out.println("Enter the number of the shoe you want to add to your cart: ");
-            shoeId = Integer.parseInt(scanner.nextLine());
-            repo.addToCart(customerId, shoeId);
-            System.out.println("Added to cart.");
-            System.out.print("Do you want to add another item to your cart? (y/n): ");
-            String userChoice = scanner.nextLine();
-            if (userChoice.equalsIgnoreCase("y")) {
-            } else if (userChoice.equalsIgnoreCase("n")) {
-                System.out.println("Thanks for shopping at MD's shoe store.");
-                break;
-            } else {
-                System.out.print("Please enter 'y' or 'n'.");
+
+            try {
+                shoeId = Integer.parseInt(scanner.nextLine());
+                repo.addToCart(customerId, shoeId);
+                System.out.println("Added to cart.");
+
+                while (true) {
+                    System.out.print("Do you want to add another item to your cart? (y/n): ");
+                    String userChoice = scanner.nextLine().trim();
+
+                    if (userChoice.equalsIgnoreCase("y")) {
+                        break;
+                    } else if (userChoice.equalsIgnoreCase("n")) {
+                        while (true) {
+                            System.out.print("Do you wish to pay for you order now or later?: ");
+                            String userChoice2 = scanner.nextLine().trim();
+                            if (userChoice2.equalsIgnoreCase("now")) {
+                                repo.payOrder(customerId);
+                                System.out.println("Thanks for shopping at MD's shoe store! \n" +
+                                        "An order receipt has been sent to you.");
+                                return;
+                            } else if (userChoice2.equalsIgnoreCase("later")) {
+                                System.out.println("Exiting store..");
+                                return;
+                            } else {
+                                System.out.println("Please enter 'now' or 'later'.");
+                            }
+                        }
+
+                    } else {
+                        System.out.println("Please enter 'y' or 'n'.");
+                    }
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter only numbers.");
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
-
-
 }

@@ -46,7 +46,16 @@ public class Repository {
         try (CallableStatement cs = c.prepareCall(sql)) {
             cs.setInt(1, c_id);
             cs.setInt(2, s_id);
-            cs.executeQuery();
+            cs.execute();
+        }
+    }
+
+    public void payOrder(int c_id) throws SQLException {
+        String sql = "call payOrder(?)";
+
+        try (CallableStatement cs = c.prepareCall(sql)) {
+            cs.setInt(1, c_id);
+            cs.execute();
         }
     }
 
