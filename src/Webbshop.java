@@ -1,5 +1,5 @@
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Webbshop {
@@ -35,13 +35,11 @@ public class Webbshop {
     }
 
     public void printAllShoes() throws SQLException {
-        ResultSet rs = repo.getAllShoes();
-        while (rs.next()) {
+        List<Shoe> shoes = repo.getAllShoes();
+        for (Shoe s : shoes) {
             System.out.println(
-                    rs.getInt("id") + ". " + rs.getString("color") + " " +
-                            rs.getString("brand") + ", " + "s." + rs.getInt("size") + " " +
-                            rs.getInt("price") + "kr" + " " + "(stock: " +
-                            rs.getString("quantity") + ")"
+                    s.getId() + ". " + s.getColor() + " " + s.getBrand() + ", s." + s.getSize()
+                    + " " + s.getPrice() + "kr " + "(stock: " + s.getQuantity() + ")"
             );
         }
     }
@@ -49,10 +47,15 @@ public class Webbshop {
     private void listShoesAndAddToCart() throws SQLException {
         while (true) {
             printAllShoes();
-            System.out.println("Enter the number of the shoe you want to add to your cart: ");
+            System.out.println("('999' to exit) Enter the number of the shoe you want to add to your cart: ");
+
 
             try {
                 shoeId = Integer.parseInt(scanner.nextLine());
+                if (shoeId == 999){
+                    System.out.println("Exiting store..");
+                    break;
+                }
                 repo.addToCart(customerId, shoeId);
                 System.out.println("Added to cart.");
 

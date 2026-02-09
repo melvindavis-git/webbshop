@@ -1,6 +1,8 @@
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class Repository {
@@ -35,9 +37,20 @@ public class Repository {
 
     }
 
-    public ResultSet getAllShoes() throws SQLException {
-        Statement s = c.createStatement();
-        return s.executeQuery("select * from shoe where quantity > 0");
+    public List<Shoe> getAllShoes() throws SQLException {
+        String sql = "select * from shoe where quantity > 0";
+        List<Shoe> shoes = new ArrayList<>();
+
+        try (Statement s = c.createStatement();
+             ResultSet rs = s.executeQuery(sql)) {
+            while (rs.next()) {
+                Shoe shoe = new Shoe(
+                        rs.getInt("id"), rs.getString("brand"), rs.getString("color"),
+                        rs.getInt("size"), rs.getInt("price"), rs.getInt("quantity"));
+                shoes.add(shoe);
+            }
+        }
+        return shoes;
     }
 
     public void addToCart(int c_id, int s_id) throws SQLException {
