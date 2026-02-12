@@ -38,7 +38,7 @@ public class Repository {
     }
 
     public List<Shoe> getAllShoes() throws SQLException {
-        String sql = "select * from shoe where quantity > 0";
+        String sql = "select * from shoe";
         List<Shoe> shoes = new ArrayList<>();
 
         try (Statement s = c.createStatement();
